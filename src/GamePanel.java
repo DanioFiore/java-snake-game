@@ -109,6 +109,7 @@ public class GamePanel extends JPanel implements ActionListener {
         draw(g);
     }
 
+    // the draw method essentially DRAW the snake
     public void draw(Graphics g) {
 
         // condition, if our game is running(true) or not
@@ -120,12 +121,22 @@ public class GamePanel extends JPanel implements ActionListener {
             // make the apple like a circle, pass the coordinate (appleX and Y) and pass the width and height size, so our UNIT_SIZE
             g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
+            // with this iteration we draw the body parts
             for (int i = 0; i < bodyParts; i++) {
+                //  if i == 0 so we have the head of the snake
                 if (i == 0) {
+
+                    // set a color for the head
                     g.setColor(Color.green);
+
+                    // with this method we create a rectangle
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 } else {
+
+                    // set the color of the body
                     g.setColor(new Color(45, 180, 0));
+
+                    // create a rectangle for every body parts
                     g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
                 }
             }
@@ -135,6 +146,7 @@ public class GamePanel extends JPanel implements ActionListener {
             g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2,
                     g.getFont().getSize());
         } else {
+            // if the game is not running, let's call the gameOver method where we pass our g (Graphics)
             gameOver(g);
         }
 
@@ -174,6 +186,8 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void checkApple() {
+
+        // check if the snake's head touch the apple, if so increase the bodyparts of the snake and the applesEaten counter
         if ((x[0] == appleX) && (y[0] == appleY)) {
             bodyParts++;
             applesEaten++;
@@ -182,55 +196,85 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void checkCollisions() {
+
+        // iterate through all the body parts and check if the head of the snake touch one of the bodyparts
         for (int i = bodyParts; i > 0; i--) {
             if ((x[0] == x[i]) && (y[0] == y[i])) {
                 running = false;
             }
         }
 
+        // check if head touches left border
         if (x[0] < 0) {
             running = false;
         }
 
+        // chef if head touches right border
         if (x[0] > SCREEN_WIDTH) {
             running = false;
         }
 
+        // check if head touches top border
         if (y[0] < 0) {
             running = false;
         }
 
+        // check if head touches bottom border
         if (y[0] > SCREEN_HEIGHT) {
             running = false;
         }
 
+        // if running is false, let's stop the timer
         if (!running) {
             timer.stop();
         }
     }
 
     public void gameOver(Graphics g) {
+
+        // set up the game over score color
         g.setColor(Color.red);
+
+        // and font
         g.setFont(new Font("Ink Free", Font.BOLD, 40));
         FontMetrics metrics = getFontMetrics(g.getFont());
+
+        // write the string displayed and positionate it in the screen
         g.drawString("Score: " + applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + applesEaten)) / 2,
                 g.getFont().getSize());
 
+            
+        // set the game over text color
         g.setColor(Color.red);
+
+        // and the font
         g.setFont(new Font("Ink Free", Font.BOLD, 75));
+
+        /**
+            ---------- FontMetrics ----------
+         * FontMetrics class defines a font metrics object, which encapsulates information about the rendering of a particula font on a particular screen
+         */
+        
         FontMetrics metrics2 = getFontMetrics(g.getFont());
+
+        // write the string displayed and positionate it in the screen
         g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over")) / 2, SCREEN_HEIGHT / 2);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // if our game is running , we call those function
         if (running) {
             move();
             checkApple();
             checkCollisions();
         }
 
+        /**
+            ---------- repaint ----------
+         * we cannot override the repaint method because it is a final method. This method take care of update to the paint() pattern of the applet. At the point when we believe that a part should repaint itself, we have to call the repaint method.
+         */
         repaint();
 
     }
@@ -262,6 +306,8 @@ public class GamePanel extends JPanel implements ActionListener {
     public class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+
+            // capture the key input of the arrow key and we make sure that the snake can't do a 180 turn but a 90 turn
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                     if (direction != 'R') {
